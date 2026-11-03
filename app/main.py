@@ -1,74 +1,85 @@
+from flask import Flask, request, jsonify, abort, Response
+from typing import Any
+import json
 import os
-import sqlite3
-from pathlib import Path
-from flask import Flask, jsonify, request
+import uuid
 
-DB_PATH = os.environ.get("DB_PATH", "/tmp/cloud_tasks.db")
+app = Flask(__name__)
 
+# garantir persistência dos dados em um arquivo JSON
+DATA_DIR: str = os.getenv('DATA_DIR', '/app/data')
+DATA_FILE: str = os.path.join(DATA_DIR, 'tasks.json')
 
-def create_app(test_config=None):
-    app = Flask(__name__)
-    app.config.update(DATABASE=DB_PATH)
-    if test_config:
-        app.config.update(test_config)
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR, exist_ok=True)
 
-    def connect():
-        path = Path(app.config["DATABASE"])
-        path.parent.mkdir(parents=True, exist_ok=True)
-        db = sqlite3.connect(str(path))
-        db.row_factory = sqlite3.Row
-        return db
+TaskDict = dict[str, dict[str, Any]]
 
-    with connect() as db:
-        db.execute("CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, done INTEGER NOT NULL DEFAULT 0)")
-        db.commit()
+def load_tasks() -> TaskDict:
+    if not os.path.exists(DATA_FILE):
+        return {}
+    with open(DATA_FILE, 'r') as f:
+        return json.load(f)
 
-    @app.get("/")
-    def index():
-        return jsonify(service="cloud-tasks-api", message="API de tarefas em nuvem", endpoints=["/health", "/tasks"])
+def save_tasks(tasks: TaskDict) -> None:
+    with open(DATA_FILE, 'w') as f:
+        json.dump(tasks, f)
 
-    @app.get("/health")
-    def health():
-        try:
-            with connect() as db:
-                db.execute("SELECT 1").fetchone()
-            return jsonify(status="ok"), 200
-        except sqlite3.Error:
-            return jsonify(status="error"), 503
+@app.route('/health', methods=['GET'])
+def health_check() -> tuple[Response, int]:
+    return jsonify({"status": "ok"}), 200
 
-    @app.get("/tasks")
-    def list_tasks():
-        with connect() as db:
-            items = db.execute("SELECT id, title, done FROM tasks ORDER BY id").fetchall()
-        return jsonify([dict(id=r["id"], title=r["title"], done=bool(r["done"])) for r in items])
+# Fazendo um CRUD completo para tarefas
 
-    @app.post("/tasks")
-    def create_task():
-        data = request.get_json(silent=True)
-        if not isinstance(data, dict) or not isinstance(data.get("title"), str) or not data["title"].strip():
-            return jsonify(error="title deve ser texto nao vazio"), 400
-        title = data["title"].strip()
-        if len(title) > 120:
-            return jsonify(error="title excede 120 caracteres"), 400
-        with connect() as db:
-            cursor = db.execute("INSERT INTO tasks(title) VALUES (?)", (title,))
-            db.commit()
-            task_id = cursor.lastrowid
-        return jsonify(id=task_id, title=title, done=False), 201
+@app.route('/tasks', methods=['POST'])
+def create_task() -> tuple[Response, int]:
+    tasks: TaskDict = load_tasks()
+    task_id: str = str(uuid.uuid4())
+    
+    data: dict[str, Any] = request.get_json() or {}
+    
+    nova_tarefa: dict[str, Any] = {
+        "id": task_id, 
+        "title": data.get("title", "Tarefa sem título"),
+        "status": data.get("status", "pendente")
+    }
+    
+    tasks[task_id] = nova_tarefa
+    save_tasks(tasks)
+    return jsonify(nova_tarefa), 201
 
-    @app.patch("/tasks/<int:task_id>")
-    def update_task(task_id):
-        data = request.get_json(silent=True)
-        if not isinstance(data, dict) or type(data.get("done")) is not bool:
-            return jsonify(error="done deve ser booleano"), 400
-        with connect() as db:
-            cursor = db.execute("UPDATE tasks SET done=? WHERE id=?", (int(data["done"]), task_id))
-            db.commit()
-        if not cursor.rowcount:
-            return jsonify(error="tarefa nao encontrada"), 404
-        return jsonify(id=task_id, done=data["done"]), 200
+@app.route('/tasks', methods=['GET'])
+def get_all_tasks() -> tuple[Response, int]:
+    tasks: TaskDict = load_tasks()
+    return jsonify(list(tasks.values())), 200
 
-    return app
+@app.route('/tasks/<task_id>', methods=['GET'])
+def get_task(task_id: str) -> tuple[Response, int]:
+    tasks: TaskDict = load_tasks()
+    if task_id not in tasks:
+        abort(404)
+    return jsonify(tasks[task_id]), 200
 
+@app.route('/tasks/<task_id>', methods=['PUT'])
+def update_task(task_id: str) -> tuple[Response, int]:
+    tasks: TaskDict = load_tasks()
+    if task_id not in tasks:
+        abort(404)
+        
+    data: dict[str, Any] = request.get_json() or {}
+    
+    tasks[task_id]["title"] = data.get("title", tasks[task_id]["title"])
+    tasks[task_id]["status"] = data.get("status", tasks[task_id]["status"])
+    
+    save_tasks(tasks)
+    return jsonify(tasks[task_id]), 200
 
-app = create_app()
+@app.route('/tasks/<task_id>', methods=['DELETE'])
+def delete_task(task_id: str) -> tuple[str, int]:
+    tasks: TaskDict = load_tasks()
+    if task_id not in tasks:
+        abort(404) 
+        
+    del tasks[task_id]
+    save_tasks(tasks)
+    return '', 204
