@@ -23,7 +23,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Executar testes (Pytest)
-        run: PYTHONPATH=. pytest
+        run: python -m pytest
 
       - name: Testar Build (Dry Run)
         run: docker build -t test-api .
