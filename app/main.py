@@ -7,7 +7,7 @@ import uuid
 app = Flask(__name__)
 
 # garantir persistência dos dados em um arquivo JSON
-DATA_DIR: str = os.getenv('DATA_DIR', '/app/data')
+DATA_DIR: str = os.getenv('DATA_DIR', 'data')
 DATA_FILE: str = os.path.join(DATA_DIR, 'tasks.json')
 
 if not os.path.exists(DATA_DIR):
