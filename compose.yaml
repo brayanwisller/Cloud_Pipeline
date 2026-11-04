@@ -1,12 +1,11 @@
 services:
   api:
-    build: .
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-brayanwisller}/cloud_pipeline:latest
     ports:
-      - "8080:8000"
-    environment:
-      DB_PATH: /data/tasks.db
+      - "8000:8000"
     volumes:
-      - task_data:/data
-    restart: unless-stopped
+      - app_data:/app/data
+    restart: always
+
 volumes:
-  task_data:
+  app_data:
