@@ -7,7 +7,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN mkdir -p /app/data
+# Garante que a pasta de dados existe e tem permissão
+RUN mkdir -p /app/data && chmod 777 /app/data
+
+ENV DATA_DIR=/app/data
 
 EXPOSE 8000
 

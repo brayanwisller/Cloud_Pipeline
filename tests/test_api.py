@@ -55,3 +55,16 @@ def test_update_task_not_found(client: FlaskClient):
     """Teste extra: Retornar 404 ao tentar atualizar tarefa inexistente"""
     update_resp = client.put('/tasks/id-falso-inexistente', json={"title": "Novo"})
     assert update_resp.status_code == 404
+def test_filter_tasks_by_status(client: FlaskClient):
+    """Teste da melhoria: filtrar tarefas por status"""
+    # Cria duas tarefas com status diferentes
+    client.post('/tasks', json={"title": "Tarefa pendente", "status": "pendente"})
+    client.post('/tasks', json={"title": "Tarefa concluída", "status": "concluido"})
+
+    # Filtra só as pendentes
+    resp = client.get('/tasks?status=pendente')
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert len(data) == 1
+    assert data[0]["status"] == "pendente"
+    assert data[0]["title"] == "Tarefa pendente"

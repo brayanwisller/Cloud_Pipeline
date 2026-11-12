@@ -49,8 +49,17 @@ def create_task() -> tuple[Response, int]:
     return jsonify(nova_tarefa), 201
 
 @app.route('/tasks', methods=['GET'])
+@app.route('/tasks', methods=['GET'])
 def get_all_tasks() -> tuple[Response, int]:
     tasks: TaskDict = load_tasks()
+    
+    # Melhoria: filtro opcional por status (?status=pendente ou ?status=concluido)
+    status_filter = request.args.get('status')
+    
+    if status_filter:
+        filtered = [t for t in tasks.values() if t.get('status') == status_filter]
+        return jsonify(filtered), 200
+    
     return jsonify(list(tasks.values())), 200
 
 @app.route('/tasks/<task_id>', methods=['GET'])
