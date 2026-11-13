@@ -14,4 +14,4 @@ ENV DATA_DIR=/app/data
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app.main:app"]
