@@ -32,7 +32,7 @@ API REST desenvolvida em Python com **Flask** para gestão de tarefas (CRUD), co
 
 ## Estrutura do Projeto
 
-```text
+```
 Cloud_Pipeline/
 ├── .github/workflows/
 │   ├── cd.yml                # Pipeline de Entrega Contínua via SSH na EC2
@@ -57,7 +57,7 @@ Cloud_Pipeline/
 ├── README.md                 # Documentação principal do projeto
 ├── requirements-dev.txt      # Dependências de desenvolvimento/testes (Pytest)
 └── requirements.txt          # Dependências de produção (Flask, Gunicorn)
-
+```
 ## Endpoints Disponíveis
 
 | Método | Rota | Descrição | 
