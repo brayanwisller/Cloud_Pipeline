@@ -41,8 +41,6 @@ Cloud_Pipeline/
 │   ├── __init__.py           # Inicializador do pacote Python
 │   ├── main.py               # Código principal da API Flask e lógica de persistência
 │   └── wsgi.py               # Ponto de entrada WSGI para o servidor de produção
-├── docs/
-│   └── CONFIGURACAO.md       # Documentação de configuração do ambiente e infraestrutura
 ├── scripts/
 │   ├── deploy.sh             # Script executado na EC2 para atualizar o contentor
 │   └── setup-ec2-ubuntu.sh   # Script de provisionamento inicial do Docker na EC2
@@ -52,7 +50,7 @@ Cloud_Pipeline/
 ├── .gitignore                # Ficheiros e pastas ignorados pelo controlo de versão Git
 ├── compose.yaml              # Orquestração local com Docker Compose
 ├── Dockerfile                # Definição da imagem Docker de produção
-├── ENUNCIADO_ALUNOS.md       # Especificação e requisitos do projeto académico
+├── RELATORIO.md              # Especificação e requisitos do projeto académico
 ├── pytest.ini                # Configurações do Pytest
 ├── README.md                 # Documentação principal do projeto
 ├── requirements-dev.txt      # Dependências de desenvolvimento/testes (Pytest)
