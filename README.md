@@ -32,25 +32,31 @@ API REST desenvolvida em Python com **Flask** para gestão de tarefas (CRUD), co
 
 ## Estrutura do Projeto
 
-```
+```text
 Cloud_Pipeline/
 ├── .github/workflows/
-│   ├── ci.yml                # Pipeline de Integração Contínua e publicação de imagem
-│   └── cd.yml                # Pipeline de Entrega Contínua via SSH na EC2
+│   ├── cd.yml                # Pipeline de Entrega Contínua via SSH na EC2
+│   └── ci.yml                # Pipeline de Integração Contínua e publicação de imagem
 ├── app/
-│   └── main.py               # Código principal da API Flask e lógica de persistência
+│   ├── __init__.py           # Inicializador do pacote Python
+│   ├── main.py               # Código principal da API Flask e lógica de persistência
+│   └── wsgi.py               # Ponto de entrada WSGI para o servidor de produção
+├── docs/
+│   └── CONFIGURACAO.md       # Documentação de configuração do ambiente e infraestrutura
 ├── scripts/
 │   ├── deploy.sh             # Script executado na EC2 para atualizar o contentor
 │   └── setup-ec2-ubuntu.sh   # Script de provisionamento inicial do Docker na EC2
 ├── tests/
 │   └── test_api.py           # Suíte de testes automatizados com Pytest
-├── Dockerfile                # Definição da imagem Docker de produção
+├── .dockerignore             # Ficheiros ignorados durante o build da imagem Docker
+├── .gitignore                # Ficheiros e pastas ignorados pelo controlo de versão Git
 ├── compose.yaml              # Orquestração local com Docker Compose
+├── Dockerfile                # Definição da imagem Docker de produção
+├── ENUNCIADO_ALUNOS.md       # Especificação e requisitos do projeto académico
 ├── pytest.ini                # Configurações do Pytest
-├── requirements.txt          # Dependências de produção (Flask, Gunicorn)
-└── requirements-dev.txt      # Dependências de desenvolvimento/testes (Pytest)
-
-```
+├── README.md                 # Documentação principal do projeto
+├── requirements-dev.txt      # Dependências de desenvolvimento/testes (Pytest)
+└── requirements.txt          # Dependências de produção (Flask, Gunicorn)
 
 ## Endpoints Disponíveis
 
