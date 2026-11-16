@@ -6,7 +6,7 @@ API REST desenvolvida em Python com **Flask** para gestão de tarefas (CRUD), co
 
 | Nome Completo | RA | 
 | ----- | ----- | 
-| Brayan Wisller | 22303778 | 
+| Brayan Wisller Pontes Teófilo | 22303778 | 
 | Lucas Araújo de Paula | 22300800 | 
 | Matheus de Tassi Alves Fagundes Gomes | 22308947 | 
 
@@ -47,10 +47,10 @@ Cloud_Pipeline/
 ├── tests/
 │   └── test_api.py           # Suíte de testes automatizados com Pytest
 ├── .dockerignore             # Ficheiros ignorados durante o build da imagem Docker
-├── .gitignore                # Ficheiros e pastas ignorados pelo controlo de versão Git
+├── .gitignore                # Arquivo para ocultar versionamento de alguns ficheiros
 ├── compose.yaml              # Orquestração local com Docker Compose
 ├── Dockerfile                # Definição da imagem Docker de produção
-├── RELATORIO.md              # Especificação e requisitos do projeto académico
+├── RELATORIO.md              # Relátorio do projeto com explicações completas
 ├── pytest.ini                # Configurações do Pytest
 ├── README.md                 # Documentação principal do projeto
 ├── requirements-dev.txt      # Dependências de desenvolvimento/testes (Pytest)
